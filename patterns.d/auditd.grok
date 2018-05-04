@@ -1,0 +1,22 @@
+# Auditd grok patterns
+# Antti Myyrä 2018
+
+AUDITD_EXECVE (node=%{WORD:audit_hostname} )?type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_id}\): argc=%{INT:audit_argc} a0=\"%{DATA:audit_a0}\"%{GREEDYDATA:audit_args}
+
+AUDITD_PATH (node=%{WORD:audit_hostname} )?type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_id}\): item=%{INT:audit_item} name=\"?%{DATA:audit_name}\"? inode=%{INT:audit_inode} dev=%{DATA:audit_dev} mode=%{INT:audit_mode} ouid=%{INT:audit_ouid} ogid=%{INT:audit_ogid} rdev=%{DATA:audit_rdev}( nametype=%{WORD:audit_nametype})?( objtype=%{WORD:audit_objtype})?
+
+AUDITD_CWD (node=%{WORD:audit_hostname} )?type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_id}\): cwd=\"%{DATA:audit_cwd}\"
+
+AUDITD_SYSCALL (node=%{WORD:audit_hostname} )?type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_id}\): arch=%{DATA} syscall=%{NUMBER:audit_syscall} success=%{WORD:audit_success} exit=%{INT:audit_exit} a0=%{WORD:audit_a0} a1=%{WORD:audit_a1} a2=%{WORD:audit_a2} a3=%{WORD:audit_a3} items=%{INT:audit_items} ppid=%{INT:audit_ppid} pid=%{INT:audit_pid} auid=%{INT:audit_auid} uid=%{INT:audit_uid} gid=%{INT:audit_gid} euid=%{INT:audit_euid} suid=%{INT:audit_suid} fsuid=%{INT:audit_fsuid} egid=%{INT:audit_egid} sgid=%{INT:audit_sgid} fsgid=%{INT:audit_fsgid} tty=%{DATA:audit_tty} ses=%{INT:audit_ses} comm=\"%{DATA:audit_comm}\" exe=\"%{DATA:audit_exe}\" key=%{DATA:audit_key}
+
+AUDITD_LOGIN (node=%{WORD:audit_hostname} )?type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_id}\): pid=%{NUMBER:audit_pid} uid=%{NUMBER:audit_uid}( subj=%{DATA:audit_subject})? old-auid=%{NUMBER:audit_oldauid} auid=%{NUMBER:audit_auid} tty=%{DATA:audit_tty} old-ses=%{NUMBER:audit_oldses} ses=%{NUMBER:audit_ses} res=%{GREEDYDATA:audit_res}
+
+AUDITD_USER_CMD (node=%{WORD:audit_hostname} )?type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_id}\): pid=%{NUMBER:audit_pid} uid=%{NUMBER:audit_uid} auid=%{NUMBER:audit_auid} ses=%{NUMBER:audit_ses}( subj=%{DATA:audit_subject})? msg=\'cwd=\"%{DATA:audit_cwd}\" cmd=%{DATA:audit_cmd} terminal=%{DATA:audit_terminal} res=%{DATA:audit_res}\'
+
+# USER_START, USER_END, CRED_ACQ, USER_ACCT, CRED_DISP, CRED_REFR, USER_AUTH, USER_ERR
+AUDITD_USER_AUTH (node=%{WORD:audit_hostname} )?type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_id}\): pid=%{INT:audit_pid} uid=%{INT:audit_uid} auid=%{INT:audit_auid} ses=%{INT:audit_ses}( subj=%{DATA:audit_subject})? msg=\'op=%{DATA:audit_op}( acct=\"(%{WORD:user}|\?)\")? exe=\"%{DATA:audit_exe}\" hostname=%{DATA} addr=(%{IPV4:src_ip}|\?) terminal=%{DATA:audit_terminal} res=%{DATA:audit_res}\'
+
+# SERVICE_START, SERVICE_STOP
+AUDITD_SERVICE (node=%{WORD:audit_hostname} )?type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_id}\): pid=%{NUMBER:audit_pid} uid=%{NUMBER:audit_uid} auid=%{NUMBER:audit_auid} ses=%{NUMBER:audit_ses}( subj=%{DATA:audit_subject})? msg=\'unit=%{DATA:audit_unit} comm=%{DATA:audit_comm} exe=\"%{DATA:audit_exe}\" hostname=%{DATA} addr=(%{IPV4:src_ip}|\?) terminal=%{DATA:audit_terminal} res=%{DATA:audit_res}\'
+
+AUDITD_PROCTITLE (node=%{WORD:audit_hostname} )?type=%{WORD:audit_type} msg=audit\(%{NUMBER:audit_epoch}:%{NUMBER:audit_id}\): proctitle=%{GREEDYDATA:audit_proctitle_hex}
